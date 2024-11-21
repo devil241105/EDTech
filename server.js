@@ -2,8 +2,8 @@ import './config/db.js';
 import express from 'express';
 import cors from 'cors';
 import AutRoutes from './routes/Auth.js';
-// import postRoutes from './routes/post.js';
-// import profileRoutes from './routes/profile.js';
+import postRoutes from './routes/post.js';
+import userRoutes from './routes/user.js';
 import cookieParser from 'cookie-parser';
 
 const app = express();
@@ -23,8 +23,8 @@ app.use(cookieParser());
 
 
 app.use('/auth', AutRoutes)
-// app.use('', postRoutes)
-// app.use('', profileRoutes)
+app.use('', postRoutes)
+app.use('', userRoutes)
 
 
 app.listen(port, () => {

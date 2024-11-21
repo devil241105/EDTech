@@ -47,39 +47,60 @@ const Register = async (req, res) => {
 
 
 
-const Login = async (req, res) => {
+const Login =async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ success: false, message: "Email and password are required." });
+        // Check if the user exists
+        const user = await userModel.findOne({ email }).select("+password");
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        const foundUser = await userModel.findOne({ email }).select("+password");
-        if (!foundUser) {
-            return res.status(404).json({ success: false, message: "User not found. Please register." });
+        // Check if the password is correct
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" });
         }
 
-        console.log("Retrieved user:", foundUser); // Debug logging
-        console.log("Stored hashed password:", foundUser.password); 
+        // Calculate the login streak
+        let currentDate = new Date();
+        let lastLoginDate = new Date(user.lastLogin);
 
-        const comparePassword = await bcrypt.compare(password, foundUser.password); 
-        if (!comparePassword) {
-            return res.status(401).json({ success: false, message: "Invalid Password" });
+        // If the user logged in today, don't change the streak
+        if (lastLoginDate.toDateString() === currentDate.toDateString()) {
+            user.loginStreak = user.loginStreak || 1;  // Ensure streak is at least 1
+        } else {
+            // Calculate difference between current date and last login date in days
+            let oneDayDifference = (currentDate - lastLoginDate) / (1000 * 3600 * 24);
+
+            if (oneDayDifference === 1) {
+                // If the user logged in the next day, increment the streak
+                user.loginStreak += 1;
+            } else {
+                // If the user missed a day, reset streak to 1
+                user.loginStreak = 1;
+            }
         }
 
-        const token = jwt.sign({ userId: foundUser._id }, process.env.JWT_SECRET, { expiresIn: "3d" });
+        // Update the last login date
+        user.lastLogin = currentDate;
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: false,
-            maxAge: 3 * 24 * 3600 * 1000,
+        // Save the user with the updated streak and lastLogin
+        await user.save();
+
+        // Create the JWT Token
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.status(200).json({
+            success: true,
+            message: "User logged in successfully",
+            token,
+            loginStreak: user.loginStreak,  // Return the login streak in the response
         });
-
-        return res.status(200).json({ success: true, message: "Login successful", user: foundUser, token });
     } catch (error) {
-        console.error("Login error:", error.message);
-        return res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
+        console.error("Error logging in:", error.message);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
 

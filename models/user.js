@@ -7,11 +7,6 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please enter a name"],
   },
 
-  avatar: {
-    public_id: String,
-    url: String,
-    type: String,
-  },
 
   email: {
     type: String,
@@ -69,6 +64,15 @@ const userSchema = new mongoose.Schema({
 
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+
+  lastLogin: {
+    type: Date,
+},
+
+loginStreak: {
+    type: Number,
+    default: 1,  // Default streak starts at 1
+},
 });
 
 // Generate a password reset token
