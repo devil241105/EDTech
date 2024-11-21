@@ -8,6 +8,8 @@ function SignInUpForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('');
+  const [preference, setPreference] = useState('');
   const [signinEmail, setSigninEmail] = useState('');
   const [signinPassword, setSigninPassword] = useState('');
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ function SignInUpForm() {
       const response = await fetch('http://localhost:5001/user/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password,role,preference}),
       });
       
       const data = await response.json();
@@ -66,6 +68,25 @@ function SignInUpForm() {
             <Component.Input type='text' placeholder='Name' value={name} onChange={(e) => setName(e.target.value)} />
             <Component.Input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
             <Component.Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Component.Select
+                 className="custom-select"
+                 value={role}
+                 onChange={(e) => setRole(e.target.value)}
+            >
+          <option value="" disabled>Select your role</option>
+           <option value="undergraduate">Undergraduate</option>
+          <option value="master">Master</option>
+            </Component.Select>
+            <Component.Select
+                 className="custom-select"
+                 value={preference}
+                 onChange={(e) => setPreference(e.target.value)}
+            >
+          <option value="" disabled>Select your Preference</option>
+           <option value="undergraduate">JEE</option>
+          <option value="master">NEET</option>
+          <option value="master">UPSC</option>
+            </Component.Select>
             <Component.Button type="submit">Sign Up</Component.Button>
           </Component.Form>
         </Component.SignUpContainer>

@@ -11,7 +11,7 @@ export const Container = styled.div`
   overflow: hidden;
   width: 800px; /* Adjust width as needed */
   max-width: 90%;
-  height: 50vh; /* Let the content decide height */
+  height: 52vh; /* Let the content decide height */
   min-height: 300px; /* Adjust the minimum height */
   padding: 20px; /* Optional: Add padding for better spacing inside the box */
   display: flex; /* Ensures content stays aligned if needed */
@@ -74,6 +74,15 @@ width: 100%;
 `;
 
 
+export const Select = styled.select`
+background-color: #eee;
+border: none;
+padding: 12px 15px;
+margin: 8px 0;
+width: 100%;
+`;
+
+
 export const Button = styled.button`
    border-radius: 20px;
    border: 1px solid #4a75c2;
@@ -82,6 +91,7 @@ export const Button = styled.button`
    font-size: 12px;
    font-weight: bold;
    padding: 12px 45px;
+   margin-top: 8px;
    letter-spacing: 1px;
    text-transform: uppercase;
    transition: transform 80ms ease-in;
